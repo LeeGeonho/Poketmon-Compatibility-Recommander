@@ -55,7 +55,7 @@ const findByDefenceType = (skillType, monsters, stage) => {
 };
 
 const findByMonster = (name) => {
-  if (!RAID_MONSTERS[name]) return;
+  if (!RAID_MONSTERS[name]) return [null];
 
   const { teraType, skillType } = RAID_MONSTERS[name];
 
@@ -86,11 +86,23 @@ const findByTeraType = (teraType) => {
   return [0, monsters[0]];
 };
 
-(() => {
-  const [stage, entry] = findByMonster("브리가론");
-  // const [stage, entry] = findByTeraType(ATTR.FLY);
+((name) => {
+  let stage;
+  let entry;
 
-  if (!!stage || entry.length === 0) {
+  if (
+    Object.values(ATTR)
+      .map((item) => item === name)
+      .includes(true)
+  ) {
+    // 속성으로 검색
+    [stage, entry] = findByTeraType(name);
+  } else {
+    // 테라 레이드 몬스터 이름으로 검색
+    [stage, entry] = findByMonster(name);
+  }
+
+  if (stage === null || entry.length === 0) {
     console.log("not entries...");
     return;
   }
@@ -101,4 +113,4 @@ const findByTeraType = (teraType) => {
   for (const monster of entry) {
     console.log(monster);
   }
-})();
+})("브리가론");
