@@ -1,10 +1,12 @@
 const { ATTR } = require("./types");
 
 module.exports.RAID_MONSTERS = {
+  // 6성
+
+  // 7성
   브리가론: {
     type: [ATTR.GRASS, ATTR.FIGHT],
     skillType: [ATTR.LAND, ATTR.FIGHT, ATTR.ROCK, ATTR.GRASS],
-    teraType: ATTR.ROCK,
   },
 };
 

@@ -55,10 +55,10 @@ const findByDefenceType = (skillType, monsters, stage) => {
   return entryMonsters.filter((item) => item !== null);
 };
 
-const findByMonster = (name) => {
+const findByMonster = (name, teraType) => {
   if (!RAID_MONSTERS[name]) return [null];
 
-  const { teraType, skillType } = RAID_MONSTERS[name];
+  const { skillType } = RAID_MONSTERS[name];
 
   const [found, monsters] = findUserMonster(teraType);
 
@@ -91,16 +91,19 @@ const find = (name, teraType) => {
   let stage;
   let entry;
 
+  // ATTR validation
   if (
-    Object.values(ATTR)
+    !Object.values(ATTR)
       .map((item) => item === teraType)
       .includes(true)
   ) {
-    // 속성으로 검색
-    [stage, entry] = findByTeraType(teraType);
+    return;
+  }
+
+  if (name !== "") {
+    [stage, entry] = findByMonster(name, teraType);
   } else {
-    // 테라 레이드 몬스터 이름으로 검색
-    [stage, entry] = findByMonster(name);
+    [stage, entry] = findByTeraType(teraType);
   }
 
   if (stage === null || entry.length === 0) {
@@ -109,12 +112,14 @@ const find = (name, teraType) => {
   }
 
   for (const monster of entry) {
-    console.log(monster);
+    console.log(
+      `${monster} (${stage === 0 ? `효과가 굉장함` : `효과가 있음`})`
+    );
   }
 };
 
 (() => {
-  find("", ATTR.WATER);
+  find("브리가론", "바위");
   // login(
   //   (client) => {
   //     console.log(`Logged in as ${client.user.tag}!`);
