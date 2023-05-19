@@ -1,3 +1,4 @@
+const { login, send } = require("./discord");
 const { COMPATIBILITY, ATTR } = require("./types");
 const { RAID_MONSTERS, USER_MONSTERS } = require("./monsters");
 
@@ -86,17 +87,17 @@ const findByTeraType = (teraType) => {
   return [0, monsters[0]];
 };
 
-((name) => {
+const find = (name, teraType) => {
   let stage;
   let entry;
 
   if (
     Object.values(ATTR)
-      .map((item) => item === name)
+      .map((item) => item === teraType)
       .includes(true)
   ) {
     // 속성으로 검색
-    [stage, entry] = findByTeraType(name);
+    [stage, entry] = findByTeraType(teraType);
   } else {
     // 테라 레이드 몬스터 이름으로 검색
     [stage, entry] = findByMonster(name);
@@ -107,10 +108,21 @@ const findByTeraType = (teraType) => {
     return;
   }
 
-  console.log(
-    `--------- ${stage == 0 ? `효과가 굉장한` : `효과가 있는`} 몬스터 목록`
-  );
   for (const monster of entry) {
     console.log(monster);
   }
-})("브리가론");
+};
+
+(() => {
+  find("", ATTR.WATER);
+  // login(
+  //   (client) => {
+  //     console.log(`Logged in as ${client.user.tag}!`);
+  //   },
+  //   (message) => {
+  //     console.log(
+  //       `[Message Created] channelId: ${message.channelId}, id: ${message.id}, content: ${message.content}`
+  //     );
+  //   }
+  // );
+})();
