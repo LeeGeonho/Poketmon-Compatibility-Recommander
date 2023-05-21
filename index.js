@@ -22,7 +22,7 @@ const findUserMonster = (teraType) => {
       );
 
       if (recommand.length > 0) {
-        entryMonsters[stage].push(name);
+        entryMonsters[stage].push({ name });
       }
     });
   });
@@ -41,17 +41,17 @@ const findUserMonster = (teraType) => {
 const findByDefenceType = (skillType, monsters) => {
   // console.log("findByDefenceType", skillType, monsters);
 
-  const entryMonsters = monsters.map((name) => {
-    const { dangerType } = USER_MONSTERS[name];
+  const entryMonsters = monsters.map((monster) => {
+    const { dangerType } = USER_MONSTERS[monster.name];
 
     const found = skillType.filter((item) => dangerType.includes(item));
     // console.log("dangerType found", found);
 
-    if (found.length >= 2) {
-      return null;
-    }
+    // if (found.length >= 2) {
+    //   return null;
+    // }
 
-    return name;
+    return { name: monster.name, dangerCount: found.length };
   });
 
   // 상성 기술이 2개 이상이면 entry에서 제외
@@ -59,18 +59,19 @@ const findByDefenceType = (skillType, monsters) => {
 };
 
 const findByMonster = (name, teraType) => {
-  if (!RAID_MONSTERS[name]) return [null];
-
   const [found, stage, monsters] = findUserMonster(teraType);
   // console.log("findUserMonster", found, stage, monsters);
   if (!found) {
-    return [null];
+    return null;
   }
 
   const { skillType } = RAID_MONSTERS[name];
   const finalEntry = findByDefenceType(skillType, monsters);
+  // console.log("finalEntry", finalEntry);
 
-  return [stage, finalEntry];
+  return finalEntry.map((item) => {
+    return { stage, ...item };
+  });
 };
 
 // 테라타입만으로 상성 체크
@@ -79,15 +80,16 @@ const findByTeraType = (teraType) => {
   // console.log("findUserMonster", found, stage, monsters);
 
   if (!found) {
-    return [null];
+    return null;
   }
 
-  return [stage, monsters];
+  return monsters.map((item) => {
+    return { stage, ...item };
+  });
 };
 
 const startFind = (name, teraType) => {
-  let stage;
-  let entry;
+  let entry = null;
 
   // ATTR validation
   if (
@@ -99,20 +101,34 @@ const startFind = (name, teraType) => {
   }
 
   if (name !== "") {
-    [stage, entry] = findByMonster(name, teraType);
+    // Monster validation
+    if (!RAID_MONSTERS[name]) return "[ERROR] 몬스터 이름이 잘못되었습니다.";
+
+    entry = findByMonster(name, teraType);
   } else {
-    [stage, entry] = findByTeraType(teraType);
+    entry = findByTeraType(teraType);
   }
 
-  if (stage === null || entry.length === 0) {
+  if (entry === null || entry.stage === null || entry.length === 0) {
     return "[INFO] 추천할 포켓몬이 없습니다.";
   }
-  // console.log(stage, entry);
+  // console.log(entry);
+
+  // sort by dangerCount
+  entry.sort(function (a, b) {
+    return a.dangerCount - b.dangerCount;
+  });
 
   const message = [];
   for (const monster of entry) {
     message.push(
-      `${monster} (${stage === 0 ? `효과가 굉장함` : `효과가 있음`})`
+      `${monster.name} (${
+        monster.stage === 0 ? `효과가 굉장함` : `효과가 있음`
+      }${
+        monster.dangerCount !== undefined
+          ? `, 상성 보유 개수: ${monster.dangerCount})`
+          : `)`
+      }`
     );
   }
 
@@ -120,7 +136,7 @@ const startFind = (name, teraType) => {
 };
 
 (() => {
-  // console.log(startFind("크레베이스", "얼음"));
+  // console.log(startFind("크레베이스", "악"));
   // return;
   login(
     (client) => {

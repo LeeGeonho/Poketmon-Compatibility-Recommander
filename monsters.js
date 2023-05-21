@@ -316,7 +316,6 @@ module.exports.USER_MONSTERS = {
       ATTR.THUNDER,
     ],
     tera: ATTR.GHOST,
-    item: "조개껍질방울",
   },
   마릴리: {
     type: [ATTR.FAIRY, ATTR.WATER],
@@ -343,7 +342,6 @@ module.exports.USER_MONSTERS = {
       ATTR.FAIRY,
     ],
     tera: ATTR.EVIL,
-    item: "조개껍질방울",
   },
   위유이: {
     type: [ATTR.EVIL, ATTR.FIRE],
@@ -370,7 +368,6 @@ module.exports.USER_MONSTERS = {
       ATTR.FAIRY,
     ],
     tera: ATTR.EVIL,
-    item: "조개껍질방울",
   },
   무쇠손: {
     type: [ATTR.THUNDER, ATTR.FIGHT],
@@ -391,7 +388,6 @@ module.exports.USER_MONSTERS = {
       ATTR.GRASS,
     ],
     tera: ATTR.FIGHT,
-    item: "메트로놈",
   },
   미라이돈: {
     type: [ATTR.THUNDER],
@@ -411,7 +407,6 @@ module.exports.USER_MONSTERS = {
       ATTR.ESPER,
     ],
     tera: ATTR.THUNDER,
-    item: "메트로놈",
   },
   한카리아스: {
     type: [ATTR.LAND, ATTR.DRAGON],
@@ -433,7 +428,6 @@ module.exports.USER_MONSTERS = {
       ATTR.GRASS,
     ],
     tera: ATTR.LAND,
-    item: "생명의구슬",
   },
   파라블레이즈: {
     type: [ATTR.FIRE, ATTR.GHOST],
@@ -459,7 +453,6 @@ module.exports.USER_MONSTERS = {
       ATTR.ESPER,
     ],
     tera: ATTR.FIRE,
-    item: "생명의구슬",
   },
   님피아: {
     type: [ATTR.FAIRY],
@@ -481,11 +474,29 @@ module.exports.USER_MONSTERS = {
       ATTR.GRASS,
     ],
     tera: ATTR.FAIRY,
-    item: "생명의구슬",
+  },
+  저승갓숭: {
+    type: [ATTR.FIGHT, ATTR.GHOST],
+    safeType: [ATTR.POISON, ATTR.ROCK, ATTR.BUG, ATTR.FIGHT, ATTR.NORMAL],
+    dangerType: [
+      ATTR.GHOST,
+      ATTR.FLY,
+      ATTR.ESPER,
+      ATTR.FAIRY,
+      ATTR.STEEL,
+      ATTR.DRAGON,
+      ATTR.LAND,
+      ATTR.WATER,
+      ATTR.EVIL,
+      ATTR.FIRE,
+      ATTR.ICE,
+      ATTR.THUNDER,
+      ATTR.GRASS,
+    ],
+    tera: ATTR.GHOST,
   },
   // 라란티스: {
   //   type: [ATTR.GRASS],
   //   tera: ATTR.GRASS,
-  //   item: "조개껍질방울",
   // },
 };
