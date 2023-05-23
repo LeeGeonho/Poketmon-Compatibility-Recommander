@@ -19,6 +19,20 @@ module.exports.ATTR = {
   FAIRY: "페어리",
 };
 
+// 유리한 정보 리스팅
+// 싫은소리, 거짓울음, 빛의장막, 도발, 스킬스왑...
+module.exports.TIP = {
+  ATTACK: "물공형", // 물공형 몬스터
+  SATTACK: "특공형", // 특공형 몬스터
+  NODEBUFF: "디버프 금지", // 디버프 무효화 또는 역상승
+  PROVOCATION: "도발유리", // 상태/변화기 봉인
+  SKILLSWAP: "스킬스왑", // 특성 교체
+  BUFFA: "싫은소리", // 아군 물공 상승
+  BUFFC: "거짓울음", // 아군 특공 상승
+  REFLECTOR: "리플렉터(물방블래키)", // 아군 물방 상승
+  TENTOFLIGHT: "빛의장막(특방블래키)", // 아군 특방 상승
+};
+
 // [속성]: [[굉장함],[있음],[별로],[없음]]
 module.exports.COMPATIBILITY = {
   [this.ATTR.NORMAL]: [

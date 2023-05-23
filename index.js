@@ -37,41 +37,49 @@ const findUserMonster = (teraType) => {
   }
 };
 
-// 상대방 포켓몬의 기술 속성이 사용자 포켓몬과 상성인지 체크
-const findByDefenceType = (skillType, monsters) => {
-  // console.log("findByDefenceType", skillType, monsters);
+const findByMonster = (targetName, teraType) => {
+  const finalEntry = [];
 
-  const entryMonsters = monsters.map((monster) => {
-    const { dangerType } = USER_MONSTERS[monster.name];
+  Object.entries(USER_MONSTERS).map(async (monster) => {
+    const name = monster[0];
+    const { type, safeType, dangerType } = monster[1];
 
-    const found = skillType.filter((item) => dangerType.includes(item));
-    // console.log("dangerType found", found);
+    // 1. 상대 몬스터의 skillType이 나의 몬스터의 safeType인지 체크
+    const safeTypes = RAID_MONSTERS[targetName].skillType.filter(
+      (item) => safeType.includes(item) && !dangerType.includes(item)
+    );
 
-    // if (found.length >= 2) {
-    //   return null;
-    // }
+    if (safeTypes.length <= 0) {
+      return;
+    }
+    // console.log(name, safeTypes);
 
-    return { name: monster.name, dangerCount: found.length };
+    // 2. 모든 skillType이 safeType이면 가장 안정적이므로 추천한다.
+    let recommand = false;
+    if (safeTypes.length === RAID_MONSTERS[targetName].skillType.length) {
+      recommand = true;
+    }
+
+    // 3. 사용자 몬스터가 가진 기술이 상대방 몬스터한테 유리한 속성인지 체크
+    // 0: 효과가 굉장함
+    // 1: 효과가 있음
+    [0, 1].map((stage) => {
+      const attackType = type.filter((item) =>
+        COMPATIBILITY[teraType][stage].includes(item)
+      );
+
+      if (attackType.length > 0) {
+        finalEntry.push({ stage, name, attackType, safeTypes, recommand });
+      }
+    });
   });
 
-  // 상성 기술이 2개 이상이면 entry에서 제외
-  return entryMonsters.filter((item) => item !== null);
-};
-
-const findByMonster = (name, teraType) => {
-  const [found, stage, monsters] = findUserMonster(teraType);
-  // console.log("findUserMonster", found, stage, monsters);
-  if (!found) {
-    return null;
-  }
-
-  const { skillType } = RAID_MONSTERS[name];
-  const finalEntry = findByDefenceType(skillType, monsters);
-  // console.log("finalEntry", finalEntry);
-
-  return finalEntry.map((item) => {
-    return { stage, ...item };
+  finalEntry.sort(function (a, b) {
+    return b.safeTypes.length - a.safeTypes.length;
   });
+
+  // console.log(finalEntry);
+  return finalEntry;
 };
 
 // 테라타입만으로 상성 체크
@@ -97,57 +105,97 @@ const startFind = (name, teraType) => {
       .map((item) => item === teraType)
       .includes(true)
   ) {
-    return "[ERROR] 없는 속성입니다.";
+    return "[ERROR] 존재하지 않는 속성입니다.";
   }
 
   if (name !== "") {
     // Monster validation
-    if (!RAID_MONSTERS[name]) return "[ERROR] 몬스터 이름이 잘못되었습니다.";
+    if (!RAID_MONSTERS[name]) return "[ERROR] 존재하지 않는 몬스터입니다.";
 
     entry = findByMonster(name, teraType);
   } else {
     entry = findByTeraType(teraType);
   }
 
-  if (entry === null || entry.stage === null || entry.length === 0) {
+  if (!Array.isArray(entry) || entry.length === 0) {
     return "[INFO] 추천할 포켓몬이 없습니다.";
   }
-  // console.log(entry);
-
-  // sort by dangerCount
-  entry.sort(function (a, b) {
-    return a.dangerCount - b.dangerCount;
-  });
 
   const message = [];
-  for (const monster of entry) {
+  for (const { name, stage, attackType, safeTypes, recommand } of entry) {
+    const detail = [];
+    detail.push(stage === 0 ? "__효과굉장__" : "효과있음");
+    // if (USER_MONSTERS[name] !== undefined) {
+    //   detail.push(USER_MONSTERS[name].tip.join(", "));
+    // }
+    if (safeTypes !== undefined) {
+      detail.push(safeTypes.length);
+    }
+
+    let recommandAttackType = "";
+    if (attackType !== undefined) {
+      recommandAttackType = `*${attackType.join(", ")}*`;
+    }
+
+    let perfect = recommand === true ? "**강추!!** / " : "";
     message.push(
-      `${monster.name} (${
-        monster.stage === 0 ? `효과가 굉장함` : `효과가 있음`
-      }${
-        monster.dangerCount !== undefined
-          ? `, 상성 보유 개수: ${monster.dangerCount})`
-          : `)`
-      }`
+      `${perfect}${name} / ${recommandAttackType} / ${detail.join(", ")}`
     );
+  }
+
+  if (name !== "" && RAID_MONSTERS[name].tip) {
+    message.push("-------------------------");
+    message.push(`참고: ${RAID_MONSTERS[name].tip.join(", ")}`);
   }
 
   return message.join("\n");
 };
 
+// 나한테 부족한 safeType을 찾는다.
+const recommandMonster = () => {
+  // 모든 type에 대해서 초기값 셋팅
+  const safeTypeList = Object.values(ATTR).map((type) => ({
+    type,
+    count: 0,
+    monsters: [],
+  }));
+
+  Object.entries(USER_MONSTERS).map(async (monster) => {
+    const name = monster[0];
+    const { type, safeType, dangerType } = monster[1];
+
+    safeType.map((type) => {
+      const index = safeTypeList.findIndex((item) => item.type === type);
+      safeTypeList[index].count++;
+      safeTypeList[index].monsters.push(name);
+    });
+  });
+
+  safeTypeList.sort((a, b) => {
+    return b.count - a.count;
+  });
+
+  const message = [];
+  for (const { type, count, monsters } of safeTypeList) {
+    message.push(`${type}, ${count}, (${monsters.join(", ")})`);
+  }
+  return message.join("\n");
+};
+
 (() => {
-  // console.log(startFind("크레베이스", "악"));
+  // recommandMonster();
+  // console.log(startFind("저승갓숭", "벌레"));
   // return;
   login(
     (client) => {
       console.log(`Logged in as ${client.user.tag}!`);
     },
     (message) => {
+      if (message.channelId !== process.env.DISCORD_CHANNEL_ID) return;
+
       console.log(
         `[Message Created] channelId: ${message.channelId}, id: ${message.id}, content: ${message.content}`
       );
-
-      if (message.channelId !== process.env.DISCORD_CHANNEL_ID) return;
 
       if (message.content.startsWith("--")) {
         const command = message.content.replaceAll("--", "").split(" ");
@@ -158,8 +206,18 @@ const startFind = (name, teraType) => {
         };
 
         send(sendData);
+        return;
       }
-    }
+      if (message.content.startsWith("??")) {
+        const sendData = {
+          content: recommandMonster(),
+        };
+
+        send(sendData);
+        return;
+      }
+    },
+    (interaction) => {}
   );
 })();
 
