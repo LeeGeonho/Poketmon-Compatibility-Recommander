@@ -13,13 +13,21 @@ const client = new Client({
 // 268011265220280320 : 신비하리
 // tags
 // [ '신비하리#1803', '쪼댕#7395', 'GeonHoBot#1355' ]
-module.exports.login = async (readyCallback, messageCallback) => {
+module.exports.login = async (
+  readyCallback,
+  messageCallback,
+  interactionCallback
+) => {
   client.on(Events.ClientReady, async () => {
     if (readyCallback) readyCallback(client);
   });
 
   client.on(Events.MessageCreate, (message) => {
     if (messageCallback) messageCallback(message);
+  });
+
+  client.on(Events.InteractionCreate, (interaction) => {
+    if (interactionCallback) interactionCallback(interaction);
   });
 
   await client.login(process.env.DISCORD_BOT_TOKEN);
