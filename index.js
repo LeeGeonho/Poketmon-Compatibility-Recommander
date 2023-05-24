@@ -122,14 +122,28 @@ const startFind = (name, teraType) => {
   }
 
   const message = [];
+  // 상대방 몬스터 정보
+  if (name !== "") {
+    message.push("--------------------------------------");
+    message.push(
+      `${name}(${teraType}) 기술타입: ${RAID_MONSTERS[name].skillType.join(
+        ", "
+      )}`
+    );
+  }
+
+  // 사용자 몬스터
+  message.push("--------------------------------------");
+  message.push("이름 / 추천기술타입 / 효과 / 방어상성타입");
+  message.push("--------------------------------------");
   for (const { name, stage, attackType, safeTypes, recommand } of entry) {
     const detail = [];
-    detail.push(stage === 0 ? "__효과굉장__" : "효과있음");
+    detail.push(stage === 0 ? "**__효과굉장__**" : "효과있음");
     // if (USER_MONSTERS[name] !== undefined) {
     //   detail.push(USER_MONSTERS[name].tip.join(", "));
     // }
     if (safeTypes !== undefined) {
-      detail.push(safeTypes.length);
+      detail.push(safeTypes.join(", "));
     }
 
     let recommandAttackType = "";
@@ -137,14 +151,14 @@ const startFind = (name, teraType) => {
       recommandAttackType = `*${attackType.join(", ")}*`;
     }
 
-    let perfect = recommand === true ? "**강추!!** / " : "";
+    let perfect = recommand === true ? "**__강추!!__** / " : "";
     message.push(
-      `${perfect}${name} / ${recommandAttackType} / ${detail.join(", ")}`
+      `${perfect}${name} / ${recommandAttackType} / ${detail.join(" / ")}`
     );
   }
 
   if (name !== "" && RAID_MONSTERS[name].tip) {
-    message.push("-------------------------");
+    message.push("--------------------------------------");
     message.push(`참고: ${RAID_MONSTERS[name].tip.join(", ")}`);
   }
 
@@ -196,28 +210,43 @@ const recommandMonster = () => {
       console.log(
         `[Message Created] channelId: ${message.channelId}, id: ${message.id}, content: ${message.content}`
       );
-
-      if (message.content.startsWith("--")) {
-        const command = message.content.replaceAll("--", "").split(" ");
-        console.log(command);
-
-        const sendData = {
-          content: startFind(command[0] ?? "", command[1]),
-        };
-
-        send(sendData);
-        return;
-      }
-      if (message.content.startsWith("??")) {
-        const sendData = {
-          content: recommandMonster(),
-        };
-
-        send(sendData);
-        return;
-      }
     },
-    (interaction) => {}
+    async (interaction) => {
+      if (interaction.isChatInputCommand()) {
+        // console.log("isChatInputCommand", interaction);
+
+        const sendData = {};
+
+        if (interaction.commandName === "stat") {
+          sendData.content = recommandMonster();
+        } else if (interaction.commandName === "find") {
+          const type = interaction.options.getString("type");
+          const monster = interaction.options.getString("monster");
+
+          sendData.content = startFind(monster !== "없음" ? monster : "", type);
+        }
+
+        sendData.content ??= "오류 발생";
+        await interaction.reply(sendData);
+      } else if (interaction.isAutocomplete()) {
+        const focusedOption = interaction.options.getFocused(true);
+
+        let choices;
+        if (focusedOption.name === "type") {
+          choices = Object.values(ATTR);
+        } else if (focusedOption.name === "monster") {
+          choices = ["없음"];
+        }
+
+        const filtered = choices.filter((choice) =>
+          choice.startsWith(focusedOption.value)
+        );
+
+        await interaction.respond(
+          filtered.map((choice) => ({ name: choice, value: choice }))
+        );
+      }
+    }
   );
 })();
 

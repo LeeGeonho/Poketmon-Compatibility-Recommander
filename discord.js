@@ -26,8 +26,8 @@ module.exports.login = async (
     if (messageCallback) messageCallback(message);
   });
 
-  client.on(Events.InteractionCreate, (interaction) => {
-    if (interactionCallback) interactionCallback(interaction);
+  client.on(Events.InteractionCreate, async (interaction) => {
+    if (interactionCallback) await interactionCallback(interaction);
   });
 
   await client.login(process.env.DISCORD_BOT_TOKEN);

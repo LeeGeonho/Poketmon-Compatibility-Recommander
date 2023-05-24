@@ -24,22 +24,22 @@ module.exports.RAID_MONSTERS = {
   },
   글레이시아: {
     type: [ATTR.ICE],
-    skillType: [ATTR.NORMAL, ATTR.ICE],
+    skillType: [ATTR.ICE],
     tip: [TIP.TENTOFLIGHT],
   },
   블래키: {
     type: [ATTR.EVIL],
-    skillType: [ATTR.NORMAL, ATTR.EVIL],
+    skillType: [ATTR.EVIL],
     tip: [],
   },
   에브이: {
     type: [ATTR.ESPER],
-    skillType: [ATTR.NORMAL, ATTR.ESPER],
+    skillType: [ATTR.ESPER],
     tip: [TIP.SKILLSWAP, TIP.NODEBUFF, TIP.TENTOFLIGHT],
   },
   님피아: {
     type: [ATTR.FAIRY],
-    skillType: [ATTR.NORMAL, ATTR.FAIRY],
+    skillType: [ATTR.FAIRY],
     tip: [TIP.PROVOCATION, TIP.TENTOFLIGHT],
   },
   가디안: {
@@ -124,7 +124,7 @@ module.exports.RAID_MONSTERS = {
   },
   찌리비크: {
     type: [ATTR.THUNDER, ATTR.FLY],
-    skillType: [ATTR.NORMAL, ATTR.FLY, ATTR.THUNDER],
+    skillType: [ATTR.FLY, ATTR.THUNDER],
     tip: [TIP.SKILLSWAP, TIP.NODEBUFF, TIP.TENTOFLIGHT],
   },
   메타몽: {
@@ -159,12 +159,12 @@ module.exports.RAID_MONSTERS = {
   },
   켄타로스불: {
     type: [ATTR.FIGHT, ATTR.FIRE],
-    skillType: [ATTR.NORMAL, ATTR.FIRE, ATTR.FIGHT],
+    skillType: [ATTR.FIRE, ATTR.FIGHT],
     tip: [TIP.REFLECTOR],
   },
   켄타로스물: {
     type: [ATTR.FIGHT, ATTR.WATER],
-    skillType: [ATTR.NORMAL, ATTR.WATER, ATTR.FIGHT],
+    skillType: [ATTR.WATER, ATTR.FIGHT],
     tip: [TIP.REFLECTOR],
   },
   대도각참: {
@@ -249,7 +249,7 @@ module.exports.RAID_MONSTERS = {
   },
   코터스: {
     type: [ATTR.FIRE],
-    skillType: [ATTR.NORMAL, ATTR.FIRE, ATTR.POISON],
+    skillType: [ATTR.FIRE, ATTR.POISON],
     tip: [TIP.PROVOCATION, TIP.NODEBUFF, TIP.TENTOFLIGHT],
   },
   불카모스: {
@@ -309,7 +309,7 @@ module.exports.RAID_MONSTERS = {
   },
   꿈트렁: {
     type: [ATTR.ICE],
-    skillType: [ATTR.ICE, ATTR.NORMAL, ATTR.LAND],
+    skillType: [ATTR.ICE, ATTR.LAND],
     tip: [TIP.REFLECTOR],
   },
   절벼게: {
@@ -329,7 +329,7 @@ module.exports.RAID_MONSTERS = {
   },
   모토마: {
     type: [ATTR.DRAGON, ATTR.NORMAL],
-    skillType: [ATTR.DRAGON, ATTR.NORMAL, ATTR.EVIL],
+    skillType: [ATTR.DRAGON, ATTR.EVIL],
     tip: [TIP.REFLECTOR],
   },
   태깅구르: {
