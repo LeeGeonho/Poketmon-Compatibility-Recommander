@@ -1,3 +1,4 @@
+require("dotenv").config();
 const { SlashCommandBuilder } = require("discord.js");
 const axios = require("axios");
 
@@ -33,8 +34,7 @@ const axios = require("axios");
       {
         timeout: 10000,
         headers: {
-          Authorization:
-            "Bot MTA5MjY1MDkzOTc1Nzg5MTY4OA.GatfE1.Jg5_oZKJ6QEKAwdKRYtAghm33SF-F8VuBwqcl8",
+          Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}`,
         },
       }
     )

@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { login, send } = require("./discord");
+const { login } = require("./discord");
 const { COMPATIBILITY, ATTR } = require("./types");
 const { RAID_MONSTERS, USER_MONSTERS } = require("./monsters");
 
