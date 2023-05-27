@@ -437,7 +437,7 @@ module.exports.RAID_MONSTERS = {
 module.exports.USER_MONSTERS = {
   타부자고: {
     style: TIP.ATTACKC,
-    type: [ATTR.STEEL, ATTR.GHOST],
+    type: [ATTR.GHOST],
     safeType: [
       ATTR.STEEL,
       ATTR.DRAGON,
@@ -493,7 +493,7 @@ module.exports.USER_MONSTERS = {
   },
   위유이: {
     style: TIP.ATTACKC,
-    type: [ATTR.EVIL, ATTR.FIRE],
+    type: [ATTR.EVIL],
     safeType: [
       ATTR.STEEL,
       ATTR.GHOST,
@@ -521,7 +521,7 @@ module.exports.USER_MONSTERS = {
   },
   무쇠손: {
     style: TIP.ATTACKA,
-    type: [ATTR.THUNDER, ATTR.FIGHT],
+    type: [ATTR.FIGHT],
     safeType: [ATTR.STEEL, ATTR.ROCK, ATTR.BUG, ATTR.THUNDER, ATTR.EVIL],
     dangerType: [
       ATTR.LAND,
@@ -594,7 +594,7 @@ module.exports.USER_MONSTERS = {
   },
   파라블레이즈: {
     style: TIP.ATTACKA,
-    type: [ATTR.FIRE, ATTR.GHOST],
+    type: [ATTR.FIRE],
     safeType: [
       ATTR.STEEL,
       ATTR.POISON,
