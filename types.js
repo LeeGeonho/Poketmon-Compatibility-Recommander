@@ -22,8 +22,8 @@ module.exports.ATTR = {
 // 유리한 정보 리스팅
 // 싫은소리, 거짓울음, 빛의장막, 도발, 스킬스왑...
 module.exports.TIP = {
-  ATTACK: "물공형", // 물공형 몬스터
-  SATTACK: "특공형", // 특공형 몬스터
+  ATTACKA: "물공", // 물공형 몬스터
+  ATTACKC: "특공", // 특공형 몬스터
   NODEBUFF: "디버프 금지", // 디버프 무효화 또는 역상승
   PROVOCATION: "도발유리", // 상태/변화기 봉인
   SKILLSWAP: "스킬스왑", // 특성 교체
