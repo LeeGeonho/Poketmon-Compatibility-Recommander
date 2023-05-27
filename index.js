@@ -203,7 +203,7 @@ const recommandMonster = () => {
       if (interaction.isChatInputCommand()) {
         // console.log("isChatInputCommand", interaction);
 
-        const sendData = { ephemeral: true };
+        const sendData = {};
 
         if (interaction.commandName === "stat") {
           sendData.content = recommandMonster();
