@@ -183,8 +183,8 @@ const recommandMonster = () => {
 (() => {
   // 👑✨💠
   // recommandMonster();
-  console.log(startFind("한카리아스", "바위"));
-  return;
+  // console.log(startFind("한카리아스", "바위"));
+  // return;
   // https://birdie0.github.io/discord-webhooks-guide
 
   const nameHistory = [];
