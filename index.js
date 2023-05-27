@@ -1,6 +1,6 @@
 require("dotenv").config();
 const { login } = require("./discord");
-const { COMPATIBILITY, ATTR } = require("./types");
+const { COMPATIBILITY, ATTR, TIP } = require("./types");
 const { RAID_MONSTERS, USER_MONSTERS } = require("./monsters");
 
 const findByMonster = (targetName, teraType) => {
@@ -117,7 +117,7 @@ const startFind = (name, teraType) => {
     safeTypes,
     recommand,
   } of entry) {
-    const { style } = USER_MONSTERS[name];
+    const { style, tip } = USER_MONSTERS[name];
     const userMonster = [];
 
     if (!!recommand) {
@@ -133,9 +133,14 @@ const startFind = (name, teraType) => {
       return item;
     });
 
+    const tipResult = tip
+      .filter((item) => !(item === TIP.BUFFA || item === TIP.BUFFC))
+      .map((item) => (item === TIP.HPROVOCATION ? "💢" : item));
+
     userMonster.push(typeWithTera.join(", "));
     userMonster.push(stage === 0 ? "⭐" : "🌕");
     userMonster.push(safeTypes.map((item) => item.substr(0, 1)).join(", "));
+    if (tipResult.length > 0) userMonster.push(tipResult.join(", "));
     userMonsters.push(userMonster.join(" / "));
   }
   message.push(userMonsters.join("\n"));
@@ -178,8 +183,8 @@ const recommandMonster = () => {
 (() => {
   // 👑✨💠
   // recommandMonster();
-  // console.log(startFind("한카리아스", "바위"));
-  // return;
+  console.log(startFind("한카리아스", "바위"));
+  return;
   // https://birdie0.github.io/discord-webhooks-guide
 
   const nameHistory = [];
