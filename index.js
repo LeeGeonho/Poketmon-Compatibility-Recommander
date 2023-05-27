@@ -8,7 +8,7 @@ const findByMonster = (targetName, teraType) => {
 
   Object.entries(USER_MONSTERS).map(async (monster) => {
     const name = monster[0]; // key
-    const { type, safeType, dangerType } = monster[1]; // value
+    const { type, safeType, dangerType, tera } = monster[1]; // value
 
     const raidMonsterSkillTypes = RAID_MONSTERS[targetName].skillType;
 
@@ -32,15 +32,24 @@ const findByMonster = (targetName, teraType) => {
     // 1: 효과가 있음
     [0, 1].map((stage) => {
       // 2. 사용자 몬스터가 가진 기술이 상대방 몬스터한테 유리한 속성인지 체크
-      const attackType = type.filter((item) =>
+      const attackTypes = type.filter((item) =>
         COMPATIBILITY[teraType][stage].includes(item)
       );
 
-      if (attackType.length > 0) {
+      // 3. attackType중에 tera타입이 있는지 체크
+      let teraTypes = [];
+      attackTypes.map((item) => {
+        if (tera.includes(item)) {
+          teraTypes.push(item);
+        }
+      });
+
+      if (attackTypes.length > 0) {
         finalEntry.push({
           stage,
           name,
-          attackType,
+          teraTypes,
+          attackTypes,
           safeTypes: calSafeTypes,
           recommand: calSafeTypes.length === raidMonsterSkillTypes.length, // 추천!
         });
@@ -54,11 +63,15 @@ const findByMonster = (targetName, teraType) => {
     const safeB = b.safeTypes.length;
     const stageA = a.stage;
     const stageB = b.stage;
+    const teraA = a.teraTypes.length;
+    const teraB = b.teraTypes.length;
 
     if (safeA > safeB) return -1;
     if (safeA < safeB) return 1;
     if (stageA < stageB) return -1;
     if (stageA > stageB) return 1;
+    if (teraA > teraB) return -1;
+    if (teraA < teraB) return 1;
     return 0;
   });
 
@@ -96,8 +109,15 @@ const startFind = (name, teraType) => {
   // 사용자 몬스터
   message.push("--------------------------------------");
   const userMonsters = [];
-  for (const { name, stage, attackType, safeTypes, recommand } of entry) {
-    const { style, tera } = USER_MONSTERS[name];
+  for (const {
+    name,
+    stage,
+    teraTypes,
+    attackTypes,
+    safeTypes,
+    recommand,
+  } of entry) {
+    const { style } = USER_MONSTERS[name];
     const userMonster = [];
 
     if (!!recommand) {
@@ -106,17 +126,14 @@ const startFind = (name, teraType) => {
       userMonster.push(`${name}(${style})`);
     }
 
-    let recommandAttackType = "";
-    if (attackType !== undefined) {
-      const typeWithTera = attackType.map((item) => {
-        if (tera.includes(item)) {
-          return `💠 ${item}`;
-        }
-        return item;
-      });
-      recommandAttackType = typeWithTera.join(", ");
-    }
-    userMonster.push(recommandAttackType);
+    const typeWithTera = attackTypes.map((item) => {
+      if (teraTypes.includes(item)) {
+        return `💠 ${item}`;
+      }
+      return item;
+    });
+
+    userMonster.push(typeWithTera.join(", "));
     userMonster.push(stage === 0 ? "⭐" : "🌕");
     userMonster.push(safeTypes.map((item) => item.substr(0, 1)).join(", "));
     userMonsters.push(userMonster.join(" / "));
