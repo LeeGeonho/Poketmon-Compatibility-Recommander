@@ -57,7 +57,7 @@ const findByMonster = (targetName, teraType) => {
     });
   });
 
-  // 3. safeTypes이 많고 효과가 굉장한거 우선순위로 정렬
+  // 3. safeTypes이 많고 효과가 굉장하고 테라스탈 타입 우선순위로 정렬
   finalEntry.sort(function (a, b) {
     const safeA = a.safeTypes.length;
     const safeB = b.safeTypes.length;
@@ -174,7 +174,37 @@ const recommandMonster = () => {
   });
 
   const message = [];
+
+  message.push("--------------------------------------");
   for (const { type, count, monsters } of safeTypeList) {
+    message.push(`${type}, ${count}, (${monsters.join(", ")})`);
+  }
+
+  // 사용자 몬스터들의 테라 속성 리스트
+  message.push("--------------------------------------");
+  // 모든 type에 대해서 초기값 셋팅
+  const teraTypeList = Object.values(ATTR).map((type) => ({
+    type,
+    count: 0,
+    monsters: [],
+  }));
+
+  Object.entries(USER_MONSTERS).map(async (monster) => {
+    const name = monster[0];
+    const { tera: teraTypes } = monster[1];
+
+    teraTypes.map((type) => {
+      const index = teraTypeList.findIndex((item) => item.type === type);
+      teraTypeList[index].count++;
+      teraTypeList[index].monsters.push(name.substr(0, 3));
+    });
+  });
+
+  teraTypeList.sort((a, b) => {
+    return b.count - a.count;
+  });
+
+  for (const { type, count, monsters } of teraTypeList) {
     message.push(`${type}, ${count}, (${monsters.join(", ")})`);
   }
   return message.join("\n");
@@ -182,7 +212,7 @@ const recommandMonster = () => {
 
 (() => {
   // 👑✨💠
-  // recommandMonster();
+  // console.log(recommandMonster());
   // console.log(startFind("한카리아스", "바위"));
   // return;
   // https://birdie0.github.io/discord-webhooks-guide
