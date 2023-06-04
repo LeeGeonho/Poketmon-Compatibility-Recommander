@@ -12,37 +12,46 @@ const findByMonster = (targetName, teraType) => {
 
     const raidMonsterSkillTypes = RAID_MONSTERS[targetName].skillType;
 
-    // 1. 상대 몬스터의 skillType이 나의 몬스터의 safeType인지 체크
-    const calSafeTypes = raidMonsterSkillTypes.filter(
-      (item) => safeType.includes(item) && !dangerType.includes(item)
+    // 1. 상대 몬스터의 skillType이 dangerType(2배 이상의 약점)인지 체크
+    const calDangerTypes = raidMonsterSkillTypes.filter((item) =>
+      dangerType.includes(item)
     );
+    // 1-1. 하나라도 있으면 엔트리에서 제외
+    if (calDangerTypes.length !== 0) return;
 
-    // console.log(name, calSafeTypes, raidMonsterSkillTypes);
-    // 1-1. calSafeTypes가 없으면 엔트리에서 제외
+    // 2. 상대 몬스터의 skillType이 나의 몬스터의 safeType인지 체크
+    const calSafeTypes = raidMonsterSkillTypes.filter((item) =>
+      Object.keys(safeType).includes(item)
+    );
+    // 2-1. calSafeTypes가 없으면 엔트리에서 제외
     if (calSafeTypes.length === 0) return;
-    // 1-2. calSafeTypes가 raidMonsterSkillTypes과 두개 이상 차이나면 엔트리에서 제외
+    // 2-2. calSafeTypes가 raidMonsterSkillTypes과 두개 이상 차이나면 엔트리에서 제외
     if (
       raidMonsterSkillTypes.length >= 3 &&
       calSafeTypes.length < raidMonsterSkillTypes.length - 2
     ) {
       return;
     }
+    // 2-3. score 계산
+    const score = calSafeTypes
+      .map((type) => safeType[type])
+      .reduce((sum, currValue) => sum + currValue, 0);
 
     // 0: 효과가 굉장함
     // 1: 효과가 있음
     [0, 1].map((stage) => {
-      // 2. 사용자 몬스터가 가진 기술이 상대방 몬스터한테 유리한 속성인지 체크
+      // 3. 사용자 몬스터가 가진 기술이 상대방 몬스터한테 유리한 속성인지 체크
       const attackTypes = type.filter((item) =>
         COMPATIBILITY[teraType][stage].includes(item)
       );
 
-      // 3. attackType중에 tera타입이 있는지 체크
-      let teraTypes = [];
-      attackTypes.map((item) => {
-        if (tera.includes(item)) {
-          teraTypes.push(item);
-        }
-      });
+      // 4. attackType중에 tera타입이 있는지 체크
+      const teraTypes = attackTypes.filter((item) => tera.includes(item));
+
+      // 5. 추천 몬스터를 선정
+      let recommand = false;
+      if (stage === 0 && teraTypes.length !== 0 && score < calSafeTypes.length)
+        recommand = true;
 
       if (attackTypes.length > 0) {
         finalEntry.push({
@@ -51,13 +60,15 @@ const findByMonster = (targetName, teraType) => {
           teraTypes,
           attackTypes,
           safeTypes: calSafeTypes,
-          recommand: calSafeTypes.length === raidMonsterSkillTypes.length, // 추천!
+          recommand,
+          score,
         });
       }
     });
   });
 
-  // 3. safeTypes이 많고 효과가 굉장하고 테라스탈 타입 우선순위로 정렬
+  // 6. 정렬
+  // safeTypes를 많이 갖고 있고 효과가 굉장한 기술을 갖고 있고 테라 타입을 보유중이며, 방어상성(스코어)이 좋은 순
   finalEntry.sort(function (a, b) {
     const safeA = a.safeTypes.length;
     const safeB = b.safeTypes.length;
@@ -65,6 +76,8 @@ const findByMonster = (targetName, teraType) => {
     const stageB = b.stage;
     const teraA = a.teraTypes.length;
     const teraB = b.teraTypes.length;
+    const scoreA = a.score;
+    const scoreB = b.score;
 
     if (safeA > safeB) return -1;
     if (safeA < safeB) return 1;
@@ -72,6 +85,8 @@ const findByMonster = (targetName, teraType) => {
     if (stageA > stageB) return 1;
     if (teraA > teraB) return -1;
     if (teraA < teraB) return 1;
+    if (scoreA < scoreB) return -1;
+    if (scoreA > scoreB) return 1;
     return 0;
   });
 
@@ -101,6 +116,7 @@ const startFind = (name, teraType) => {
   message.push("--------------------------------------");
   message.push(`**${name} ${teraType}**`);
   message.push(`타입: ${RAID_MONSTERS[name].style}`);
+  message.push(`약점속성: ${COMPATIBILITY[teraType][0].join(", ")}`);
   message.push(`기술속성: ${RAID_MONSTERS[name].skillType.join(", ")}`);
   if (RAID_MONSTERS[name].tip) {
     message.push(`참고: ${RAID_MONSTERS[name].tip.join(", ")}`);
@@ -117,7 +133,7 @@ const startFind = (name, teraType) => {
     safeTypes,
     recommand,
   } of entry) {
-    const { style, tip } = USER_MONSTERS[name];
+    const { safeType, style, tip } = USER_MONSTERS[name];
     const userMonster = [];
 
     if (!!recommand) {
@@ -139,9 +155,16 @@ const startFind = (name, teraType) => {
 
     userMonster.push(typeWithTera.join(", "));
     userMonster.push(stage === 0 ? "⭐" : "🌕");
-    userMonster.push(safeTypes.map((item) => item.substr(0, 1)).join(", "));
+    userMonster.push(
+      safeTypes
+        .map((item) => item.substr(0, 1) + safeType[item])
+        .join(", ")
+        .replaceAll("0.", ".")
+    );
     if (tipResult.length > 0) userMonster.push(tipResult.join(", "));
     userMonsters.push(userMonster.join(" / "));
+
+    if (userMonsters.length >= 10) break;
   }
   message.push(userMonsters.join("\n"));
   message.push("--------------------------------------");
@@ -160,9 +183,10 @@ const recommandMonster = () => {
 
   Object.entries(USER_MONSTERS).map(async (monster) => {
     const name = monster[0];
-    const { type, safeType, dangerType } = monster[1];
+    const { safeType } = monster[1];
 
-    safeType.map((type) => {
+    Object.keys(safeType).map((type) => {
+      if (safeType[type] === 1) return;
       const index = safeTypeList.findIndex((item) => item.type === type);
       safeTypeList[index].count++;
       safeTypeList[index].monsters.push(name.substr(0, 3));
@@ -213,7 +237,7 @@ const recommandMonster = () => {
 (() => {
   // 👑✨💠
   // console.log(recommandMonster());
-  // console.log(startFind("한카리아스", "바위"));
+  // console.log(startFind("코터스", "독"));
   // return;
   // https://birdie0.github.io/discord-webhooks-guide
 
