@@ -34,6 +34,34 @@ module.exports.TIP = {
   TENTOFLIGHT: "빛의장막(특방블래키)", // 아군 특방 상승
 };
 
+// 상대 몬스터가 보유한 위험한 스킬
+module.exports.CAUTION = {
+  CHARM: "공2랭다", // 애교부리기
+  YAWN: "1턴후수면", // 하품
+  BURN: "공위력50%감소", // 도깨비불
+  TWAVE: "마비+스피드50%감소", // 전기자석파
+  TICKLE: "공방1랭다", // 간지르기
+  PROVOCATION: "도발시전", // 도발
+  MOXIE: "아군사망시 공1랭상", // 자기과신
+  CURSED: "아군사용스킬봉인", // 저주받은바디
+  TEXCHANGED: "아군불스킬사용시 공1랭상", // 열교환
+  MIST: "랭다무효", // 흰안개
+  SUPERSONIC: "혼란유발", // 초음파
+  DANCE: "공2랭다", // 깃털댄스
+  MIRRORARMOR: "랭다반사", // 미러아머
+  COMPETITIVE: "랭다시 특공2랭상", // 승기
+  HYPNOSIS: "수면유발", // 최면술
+  DEFIANT: "랭다시 공2랭상", // 오기
+  SPORE: "수면유발", // 버섯포자
+  EYE: "공1랭다", //초롱초롱눈동자
+  NUZZLE: "마비", // 볼부비부비
+  ICESCALE: "특공위력50%감소", // 얼음인분
+  SALT: "상태이상무효", // 정화의소금
+  CLEARBODY: "랭다무효", // 클리어바디
+  KISS: "혼란유발", // 천사의키스
+  FLATTER: "특공1랭상+혼란유발", // 부추기기
+};
+
 // [속성]: [[굉장함],[있음],[별로],[없음]]
 module.exports.COMPATIBILITY = {
   [this.ATTR.NORMAL]: [
