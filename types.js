@@ -27,6 +27,7 @@ module.exports.TIP = {
   NODEBUFF: "디버프 금지", // 디버프 무효화 또는 역상승
   PROVOCATION: "도발유리", // 상태/변화기 봉인
   HPROVOCATION: "도발", // 도발 보유
+  IPROVOCATION: "도발무시", // 도발 무시
   SKILLSWAP: "스킬스왑", // 특성 교체
   BUFFA: "싫은소리", // 아군 물공 상승
   BUFFC: "거짓울음", // 아군 특공 상승
