@@ -290,26 +290,30 @@ const detail = (type) => {
   const message = [];
 
   message.push("--------------------------------------");
-  message.push(`**${type}**`);
+  message.push(`**${type}** 타입 몬스터 상세정보`);
+  message.push("--------------------------------------");
+
   // type에 해당하는 사용자 몬스터 필터
   const monsterNames = Object.keys(USER_MONSTERS).filter((monster) =>
     USER_MONSTERS[monster].type.includes(type)
   );
-  message.push(`${monsterNames.join(", ")}`);
-  message.push("--------------------------------------");
-
   const mergeDangerTypes = [
     ...new Set(
-      [...monsterNames.map((name) => USER_MONSTERS[name].dangerType)].flat()
+      [
+        ...monsterNames.map((name) => {
+          const dangerType = USER_MONSTERS[name].dangerType;
+          message.push(`**${name}** : ${dangerType.join(", ")}`);
+          return dangerType;
+        }),
+      ].flat()
     ),
   ];
-  message.push(`샘플 위험 속성 : ${mergeDangerTypes.join(", ")}`);
 
   // 위험 속성을 제외하고 남은 속성을 보여준다. (새로운 샘플 만들때 참고)
   let excludeCaution = Object.values(ATTR).filter(
     (attrType) => !mergeDangerTypes.includes(attrType)
   );
-  message.push(`추천 위험 속성 : ${excludeCaution.join(", ")}`);
+  message.push(`- 추천 위험 속성 : ${excludeCaution.join(", ")}`);
 
   message.push("--------------------------------------");
   return message.join("\n");
@@ -319,7 +323,7 @@ const detail = (type) => {
   // 👑✨💠
   // console.log(recommandMonster());
   // console.log(startFind("파라블레이즈", "페어리"));
-  // console.log(detail("땅"));
+  // console.log(detail("물"));
   // return;
   // https://birdie0.github.io/discord-webhooks-guide
 

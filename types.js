@@ -2,7 +2,7 @@ module.exports.ATTR = {
   NORMAL: "노말",
   FIRE: "불",
   WATER: "물",
-  THUNDER: "번개",
+  THUNDER: "전기",
   ICE: "얼음",
   GRASS: "풀",
   FIGHT: "격투",
