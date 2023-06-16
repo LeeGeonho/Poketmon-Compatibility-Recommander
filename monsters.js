@@ -467,7 +467,14 @@ module.exports.RAID_MONSTERS = {
     caution: [CAUTION.BURN],
   },
 
-  // 7성
+  // 6성 테라 레이드
+  무쇠바퀴: {
+    style: TIP.ATTACKA,
+    type: [ATTR.LAND, ATTR.STEEL],
+    skillType: [ATTR.THUNDER, ATTR.BUG, ATTR.STEEL, ATTR.LAND],
+    tip: [TIP.REFLECTOR],
+  },
+  // 7성 테라 레이드
   브리가론: {
     style: TIP.ATTACKA,
     type: [ATTR.GRASS, ATTR.FIGHT],
@@ -1340,6 +1347,7 @@ module.exports.USER_MONSTERS = {
       [ATTR.FIRE]: 0.5,
       [ATTR.EVIL]: 0.5,
       [ATTR.ICE]: 0.5,
+      [ATTR.ESPER]: 0,
     },
     dangerType: [ATTR.FIGHT, ATTR.BUG, ATTR.THUNDER, ATTR.FAIRY, ATTR.GRASS],
     tera: [ATTR.EVIL],

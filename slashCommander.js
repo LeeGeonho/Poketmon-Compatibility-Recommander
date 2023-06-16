@@ -25,6 +25,17 @@ const axios = require("axios");
   //   .setName("stat")
   //   .setDescription("나의 포켓몬들의 방어 속성을 보여줍니다.");
 
+  // const command = new SlashCommandBuilder()
+  //   .setName("detail")
+  //   .setDescription("속성별 상세정보를 보여줍니다.")
+  //   .addStringOption((option) =>
+  //     option
+  //       .setName("type")
+  //       .setDescription("속성을 선택하세요.")
+  //       .setRequired(true)
+  //       .setAutocomplete(true)
+  //   );
+
   const commandJson = command.toJSON();
 
   axios
