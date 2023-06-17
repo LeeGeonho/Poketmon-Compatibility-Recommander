@@ -307,13 +307,13 @@ const detail = (type) => {
             safeType: tSafeType,
           } = USER_MONSTERS[name];
 
-          const safeType = Object.keys(tSafeType);
-          const normalSafeType = safeType.filter(
-            (type) => USER_MONSTERS[name].safeType[type] === 1
-          );
-          const superSafeType = safeType.filter(
-            (type) => USER_MONSTERS[name].safeType[type] !== 1
-          );
+          const safeType = Object.keys(tSafeType).sort();
+          const normalSafeType = safeType
+            .filter((type) => USER_MONSTERS[name].safeType[type] === 1)
+            .sort();
+          const superSafeType = safeType
+            .filter((type) => USER_MONSTERS[name].safeType[type] !== 1)
+            .sort();
 
           message.push(`**${index + 1}.${name}** (${style})`);
           message.push(
@@ -333,9 +333,9 @@ const detail = (type) => {
   ];
 
   // 위험 속성을 제외하고 남은 속성을 보여준다. (새로운 샘플 만들때 참고)
-  let excludeCaution = Object.values(ATTR).filter(
-    (attrType) => !mergeDangerTypes.includes(attrType)
-  );
+  let excludeCaution = Object.values(ATTR)
+    .filter((attrType) => !mergeDangerTypes.includes(attrType))
+    .sort();
   message.push(`추천 위험 속성 : ${excludeCaution.join(", ")}`);
 
   message.push("--------------------------------------");
