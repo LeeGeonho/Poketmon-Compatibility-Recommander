@@ -695,7 +695,7 @@ module.exports.USER_MONSTERS = {
     },
     dangerType: [ATTR.GHOST, ATTR.FLY, ATTR.ESPER, ATTR.FAIRY],
     tera: [ATTR.GHOST],
-    tip: [TIP.BUFFA, TIP.HPROVOCATION],
+    tip: [TIP.BUFFA, TIP.HPROVOCATION, TIP.ISLEEP],
   },
   나이킹: {
     style: TIP.ATTACKA,

@@ -300,9 +300,32 @@ const detail = (type) => {
   const mergeDangerTypes = [
     ...new Set(
       [
-        ...monsterNames.map((name) => {
-          const dangerType = USER_MONSTERS[name].dangerType;
-          message.push(`**${name}** : ${dangerType.join(", ")}`);
+        ...monsterNames.map((name, index) => {
+          const {
+            style,
+            dangerType,
+            safeType: tSafeType,
+          } = USER_MONSTERS[name];
+
+          const safeType = Object.keys(tSafeType);
+          const normalSafeType = safeType.filter(
+            (type) => USER_MONSTERS[name].safeType[type] === 1
+          );
+          const superSafeType = safeType.filter(
+            (type) => USER_MONSTERS[name].safeType[type] !== 1
+          );
+
+          message.push(`**${index + 1}.${name}** (${style})`);
+          message.push(
+            `위험 속성(${dangerType.length}) : ${dangerType.join(", ")}`
+          );
+          message.push(
+            `보통 속성(${normalSafeType.length}) : ${normalSafeType.join(", ")}`
+          );
+          message.push(
+            `안전 속성(${superSafeType.length}) : ${superSafeType.join(", ")}`
+          );
+          message.push("--------------------------------------");
           return dangerType;
         }),
       ].flat()
@@ -313,7 +336,7 @@ const detail = (type) => {
   let excludeCaution = Object.values(ATTR).filter(
     (attrType) => !mergeDangerTypes.includes(attrType)
   );
-  message.push(`- 추천 위험 속성 : ${excludeCaution.join(", ")}`);
+  message.push(`추천 위험 속성 : ${excludeCaution.join(", ")}`);
 
   message.push("--------------------------------------");
   return message.join("\n");
