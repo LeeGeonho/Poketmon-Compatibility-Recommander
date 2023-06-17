@@ -1067,7 +1067,7 @@ module.exports.USER_MONSTERS = {
   },
   아머까오: {
     style: TIP.ATTACKA,
-    type: [ATTR.FIGHT],
+    type: [ATTR.FIGHT, ATTR.STEEL],
     safeType: {
       [ATTR.GHOST]: 1,
       [ATTR.FIGHT]: 1,
@@ -1087,7 +1087,7 @@ module.exports.USER_MONSTERS = {
       [ATTR.LAND]: 0,
     },
     dangerType: [ATTR.FIRE, ATTR.THUNDER],
-    tera: [ATTR.FIGHT],
+    tera: [ATTR.FIGHT, ATTR.STEEL],
     tip: [TIP.BUFFA, TIP.HPROVOCATION],
   },
   다투곰: {
