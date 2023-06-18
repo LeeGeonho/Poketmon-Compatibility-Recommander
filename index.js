@@ -128,9 +128,9 @@ const findByMonster = (targetName, teraType) => {
 
   // 7. recommand 별로 3개씩만 필터링
   const lineup = [
-    ...finalEntry.filter((item) => item.recommand === 1).slice(0, 3),
-    ...finalEntry.filter((item) => item.recommand === 0).slice(0, 3),
-    ...finalEntry.filter((item) => item.recommand === -1).slice(0, 3),
+    ...finalEntry.filter((item) => item.recommand === 1).slice(0, 5),
+    ...finalEntry.filter((item) => item.recommand === 0).slice(0, 5),
+    ...finalEntry.filter((item) => item.recommand === -1).slice(0, 5),
   ];
 
   return lineup;
