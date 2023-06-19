@@ -1,6 +1,6 @@
 module.exports.ATTR = {
   NORMAL: "노말",
-  FIRE: "불",
+  FIRE: "불꽃",
   WATER: "물",
   THUNDER: "전기",
   ICE: "얼음",
