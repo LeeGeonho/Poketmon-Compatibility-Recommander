@@ -36,6 +36,26 @@ const axios = require("axios");
   //       .setAutocomplete(true)
   //   );
 
+  // const command = new SlashCommandBuilder()
+  //   .setName("check")
+  //   .setDescription(
+  //     "모든 포켓몬 중에서 상대 포켓몬에 최적화된 포켓몬을 추천해줍니다!"
+  //   )
+  //   .addStringOption((option) =>
+  //     option
+  //       .setName("type")
+  //       .setDescription("테라스탈 속성을 선택하세요.")
+  //       .setRequired(true)
+  //       .setAutocomplete(true)
+  //   )
+  //   .addStringOption((option) =>
+  //     option
+  //       .setName("monster")
+  //       .setDescription("상대 포켓몬 이름을 입력하세요.")
+  //       .setRequired(true)
+  //       .setAutocomplete(true)
+  //   );
+
   const commandJson = command.toJSON();
 
   axios

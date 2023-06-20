@@ -1455,7 +1455,7 @@ module.exports.USER_MONSTERS = {
     },
     dangerType: [ATTR.LAND, ATTR.FIRE],
     tera: [ATTR.POISON],
-    tip: [TIP.BUFFA],
+    tip: [TIP.BUFFA, TIP.HPROVOCATION],
   },
   버드렉스: {
     style: TIP.ATTACKA,

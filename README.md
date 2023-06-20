@@ -1,58 +1,89 @@
 # Poketmon-Compatibility-Recommander
 
-매번 상성 보는거 어지럽다. 등장 몬스터만 선택하면 참여할 몬스터를 추천해주는 프로그램을 만들자.
+디스코드 bot을 활용하여 레이드를 위한 최적의 포켓몬을 추천해주는 프로그램입니다.
 
-- 필요조건
+## 사용법
 
-  ~~프리셋으로 등장 몬스터 리스트가 있으며, 선택시 2,3이 자동 선택됨.~~  
-  ~~2,3은 수정도 가능~~
+1. 머신에 아래 명령어 호출
 
-  디스코드를 연동하자.
+   `pm2 start ./index.js --name PSVRecommander --time`
 
-  1.  프론트를 안만들어도 된다.
-  2.  외부망을 안뚫어도 된다.
-  3.  해보고 싶었다.
+2. 디스코드에 명령어 입력
 
-- 결과
+## 디스코드 bot api
 
-1. 공격형
+- type별로 나의 포켓몬의 정보를 종합해서 보여줌.
 
-   공격 방어 상성을 고려한 몬스터를 추천.
+  `/detail ${type}`
 
-   > 상대 몬스터의 방어 상성도 고려하자.
-   > 솔플로는 원펀치가 안되니 내구성이 더 중요함.
+- 모든 type별로 나의 포켓몬을 정렬해서 보여줌.
 
-- 데이터 테이블
+  `/stat`
 
-1. 등장 몬스터 데이터
+- 테라 레이드에 출현한 type, name을 토대로 나의 포켓몬 중 최적의 포켓몬을 추천해줌.
 
-   이름, 기본속성1, 기본속성2, 테라속성
+  `/find ${type} ${name}`
 
-2. 추천 몬스터 데이터
+- 테라 레이드에 출현한 type, name을 토대로 모든 포켓몬 중에서 추천해줌.
 
-   유형,
+  `/check ${type} ${name}`
 
-   이름,
+## 파일 설명
 
-   기본속성1, 기본속성2,
+### index.js
 
-   테라속성,
+디스코드 commander 처리와 데이터를 가공하여 응답 처리
 
-   ~~지닌 물건,~~
+### 몬스터 관련 데이터
 
-   ~~추천 전투 방식~~
+- type.js
 
-3. 상성 테이블
+  포켓몬스터의 속성 및 팁, 부가정보 목록
 
-   속성,
+- monster.js
 
-   약점속성1(굉장함),
+  RAID_MONSTERS : 6성~ 테라레이드 포켓몬 상세 목록
 
-   약점속성2(있음),
+  USER_MONSTERS : 나의 포켓몬 상세 목록
 
-   약점속성3(별로),
+- /data/allMonsters.js
 
-   약점속성4(없음)
+  ALL_MONSTERS : 속성별로 현존하는 모든 포켓몬 이름 (메타 데이터)
 
-- Roadmap
-  - 서포터형 추천
+- /data/out/monsterMap\_${type}.json
+
+  속성별로 현존하는 모든 포켓몬 상세 목록 (메타 데이터)
+
+### 크롤링(crawling)
+
+모든 포켓몬의 정보를 가져오기 위해 크롤링함
+
+- crawling.js
+
+  `https://pokemon.fandom.com` 사이트의 데이터 활용하여 `/data/out`폴더에 속성별로 저장함
+
+- crawling_temp.js
+
+  `allMonsters.js`을 만들기 위한 데이터 보정
+
+### 디스코드
+
+- discord.js
+
+  디스코드 api를 사용하기 위한 Helper
+
+- slashCommander.js
+
+  디스코드 bot commander를 만드는 스크립트
+
+## 새로운 몬스터가 추가되면?
+
+1. 새로운 포켓몬의 속성을 찾는다.
+
+   > https://pokemon.fandom.com/ko/wiki/%EB%B6%84%EB%A5%98:%ED%83%80%EC%9E%85%EB%B3%84_%ED%8F%AC%EC%BC%93%EB%AA%AC
+
+2. `/data/allMonsters.js`에 추가한다.
+
+3. 해당하는 속성 파일(`/data/out/monsterMap\_${type}.json`)을 지운다.
+
+4. `crawling.js`에서 해당 속성만 스크립트를 실행한다.

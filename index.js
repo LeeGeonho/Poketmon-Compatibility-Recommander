@@ -1,7 +1,24 @@
 require("dotenv").config();
+const fs = require("fs");
 const { login } = require("./discord");
 const { COMPATIBILITY, ATTR, TIP, CAUTION } = require("./types");
 const { RAID_MONSTERS, USER_MONSTERS } = require("./monsters");
+
+const inputValidation = (name, teraType) => {
+  // ATTR validation
+  if (
+    !Object.values(ATTR)
+      .map((item) => item === teraType)
+      .includes(true)
+  ) {
+    return [false, "[ERROR] 존재하지 않는 속성입니다."];
+  }
+  // Monster validation
+  if (!RAID_MONSTERS[name])
+    return [false, "[ERROR] 존재하지 않는 몬스터입니다."];
+
+  return [true];
+};
 
 const findByMonster = (targetName, teraType) => {
   const finalEntry = []; // 최종 선발 엔트리
@@ -137,16 +154,8 @@ const findByMonster = (targetName, teraType) => {
 };
 
 const startFind = (name, teraType) => {
-  // ATTR validation
-  if (
-    !Object.values(ATTR)
-      .map((item) => item === teraType)
-      .includes(true)
-  ) {
-    return "[ERROR] 존재하지 않는 속성입니다.";
-  }
-  // Monster validation
-  if (!RAID_MONSTERS[name]) return "[ERROR] 존재하지 않는 몬스터입니다.";
+  const [validate, failMsg] = inputValidation(name, teraType);
+  if (!validate) return failMsg;
 
   const entry = findByMonster(name, teraType);
 
@@ -224,38 +233,8 @@ const startFind = (name, teraType) => {
   return message.join("\n");
 };
 
-// 나한테 부족한 safeType을 찾는다.
 const recommandMonster = () => {
-  // 모든 type에 대해서 초기값 셋팅
-  const safeTypeList = Object.values(ATTR).map((type) => ({
-    type,
-    count: 0,
-    monsters: [],
-  }));
-
-  Object.entries(USER_MONSTERS).map(async (monster) => {
-    const name = monster[0];
-    const { safeType } = monster[1];
-
-    Object.keys(safeType).map((type) => {
-      if (safeType[type] === 1) return;
-      const index = safeTypeList.findIndex((item) => item.type === type);
-      safeTypeList[index].count++;
-      safeTypeList[index].monsters.push(name.substr(0, 3));
-    });
-  });
-
-  safeTypeList.sort((a, b) => {
-    return b.count - a.count;
-  });
-
   const message = [];
-
-  message.push("--------------------------------------");
-  for (const { type, count, monsters } of safeTypeList) {
-    message.push(`**${type}**, ${count}, (${monsters.join(", ")})`);
-  }
-
   // 사용자 몬스터들의 테라 속성 리스트
   message.push("--------------------------------------");
   // 모든 type에 대해서 초기값 셋팅
@@ -342,9 +321,110 @@ const detail = (type) => {
   return message.join("\n");
 };
 
+const findMonster = (monsterName, teraType) => {
+  const [validate, failMsg] = inputValidation(monsterName, teraType);
+  if (!validate) return failMsg;
+
+  const compTypes = COMPATIBILITY[teraType][0];
+  const raidMonsterSkillTypes = RAID_MONSTERS[monsterName].skillType;
+
+  const finalEntry = [];
+  compTypes.map((type) => {
+    const mapJson = JSON.parse(
+      fs.readFileSync(`./data/out/monsterMap_${type}.json`, "utf8")
+    );
+
+    Object.entries(mapJson)
+      .filter((monster) => monster[1].totalStat > 500)
+      .map((monster) => {
+        const name = monster[0]; // key
+        const { safeType, dangerType, totalStat } = monster[1]; // value
+
+        const calDangerTypes = raidMonsterSkillTypes.filter((item) =>
+          Object.keys(dangerType).includes(item)
+        );
+        // dangerType이 하나라도 있으면 제외
+        if (calDangerTypes.length !== 0) return;
+
+        const calSafeTypes = raidMonsterSkillTypes.filter((item) =>
+          Object.keys(safeType).includes(item)
+        );
+        // safeType이 없으면 제외
+        if (calSafeTypes.length === 0) return;
+        // raidMonsterSkillTypes이 3개 이상인 경우 raidMonsterSkillTypes-2보다 적으면 제외
+        if (
+          raidMonsterSkillTypes.length >= 3 &&
+          calSafeTypes.length < raidMonsterSkillTypes.length - 2
+        ) {
+          return;
+        }
+
+        const score = calSafeTypes
+          .map((type) => safeType[type])
+          .reduce((sum, currValue) => sum + currValue, 0);
+
+        // calSafeTypes이 모두 1배 방어 상성이면 제외
+        if (score >= raidMonsterSkillTypes.length) return;
+
+        const scoreWithSafeTypes = calSafeTypes.map((type) => ({
+          [type]: safeType[type],
+        }));
+
+        finalEntry.push({
+          name,
+          type,
+          safeTypes: scoreWithSafeTypes,
+          score,
+          totalStat,
+        });
+      });
+  });
+
+  // 우선순위: 종족값 총합, score
+  finalEntry.sort(function (a, b) {
+    const totalStatA = a.totalStat;
+    const totalStatB = b.totalStat;
+    const scoreA = a.score;
+    const scoreB = b.score;
+
+    if (scoreA < scoreB) return -1;
+    if (scoreA > scoreB) return 1;
+    if (totalStatA < totalStatB) return 1;
+    if (totalStatA > totalStatB) return -1;
+    return 0;
+  });
+
+  const message = [];
+  // 검색 정보
+  message.push("--------------------------------------");
+  message.push(`**${monsterName} ${teraType}**`);
+
+  for (let i = 0; i < 10; i++) {
+    if (!finalEntry[i]) continue; // 10개보다 부족한 경우 예외처리
+
+    const { name, type, safeTypes, score, totalStat } = finalEntry[i];
+
+    // 몬스터 정보
+    message.push("--------------------------------------");
+    message.push(`**${name}**`);
+    message.push(`필요 타입: ${type}`);
+    message.push(
+      `방어상성 총합(${score}): ${safeTypes
+        .map((safeType) =>
+          Object.entries(safeType).map((entry) => `${entry[0]}:${entry[1]}`)
+        )
+        .join(", ")}`
+    );
+    message.push(`종족값 총합: ${totalStat}`);
+  }
+  message.push("--------------------------------------");
+  return message.join("\n");
+};
+
 (() => {
   // 👑✨💠
   // console.log(recommandMonster());
+  // console.log(findMonster("드래펄트", "얼음"));
   // console.log(startFind("파라블레이즈", "페어리"));
   // console.log(detail("물"));
   // return;
@@ -384,7 +464,13 @@ const detail = (type) => {
             }
             nameHistory.unshift(monster);
           }
+
           sendData.content = startFind(monster, type);
+        } else if (interaction.commandName === "check") {
+          const type = interaction.options.getString("type");
+          const monster = interaction.options.getString("monster");
+
+          sendData.content = findMonster(monster, type);
         }
 
         sendData.content ??= "오류 발생";
