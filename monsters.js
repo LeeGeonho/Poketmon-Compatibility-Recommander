@@ -383,7 +383,6 @@ module.exports.RAID_MONSTERS = {
     style: TIP.ATTACKA,
     type: [ATTR.ROCK, ATTR.STEEL],
     skillType: [ATTR.ROCK, ATTR.STEEL, ATTR.FIGHT],
-    excludeType: [ATTR.GHOST],
     tip: [TIP.SKILLSWAP, TIP.NODEBUFF, TIP.REFLECTOR],
     caution: [CAUTION.SALT, CAUTION.CLEARBODY],
   },
