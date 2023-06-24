@@ -1,4 +1,4 @@
-const { ATTR } = require("../types");
+const { ATTR } = require("./types");
 
 module.exports.ALL_MONSTERS = {
   [ATTR.FIRE]: [

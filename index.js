@@ -1,8 +1,8 @@
 require("dotenv").config();
 const fs = require("fs");
 const { login } = require("./discord");
-const { COMPATIBILITY, ATTR, TIP, CAUTION } = require("./types");
-const { RAID_MONSTERS, USER_MONSTERS } = require("./monsters");
+const { COMPATIBILITY, ATTR, TIP, CAUTION } = require("./constants/types");
+const { RAID_MONSTERS, USER_MONSTERS } = require("./constants/monsters");
 
 const inputValidation = (name, teraType) => {
   // ATTR validation
@@ -125,8 +125,6 @@ const findByMonster = (targetName, teraType) => {
     const safeB = b.safeTypes.length;
     const stageA = a.stage;
     const stageB = b.stage;
-    const teraA = a.teraTypes.length;
-    const teraB = b.teraTypes.length;
     const scoreA = a.score;
     const scoreB = b.score;
 
@@ -136,8 +134,6 @@ const findByMonster = (targetName, teraType) => {
     if (safeA < safeB) return 1;
     if (stageA < stageB) return -1;
     if (stageA > stageB) return 1;
-    if (teraA > teraB) return -1;
-    if (teraA < teraB) return 1;
     if (scoreA < scoreB) return -1;
     if (scoreA > scoreB) return 1;
     return 0;
@@ -187,6 +183,7 @@ const startFind = (name, teraType) => {
     attackTypes,
     safeTypes,
     recommand,
+    score,
   } of entry) {
     const { safeType, style, tip } = USER_MONSTERS[name];
     const userMonster = [];
@@ -217,10 +214,10 @@ const startFind = (name, teraType) => {
     userMonster.push(typeWithTera.join(", "));
     userMonster.push(stage === 0 ? "⭐" : "🌕");
     userMonster.push(
-      safeTypes
+      `${score} (${safeTypes
         .map((item) => item.substr(0, 1) + safeType[item])
         .join(", ")
-        .replaceAll("0.", ".")
+        .replaceAll("0.", ".")})`
     );
     if (tipResult.length > 0) userMonster.push(tipResult.join(", "));
     userMonsters.push(userMonster.join(" / "));
@@ -312,12 +309,11 @@ const detail = (type) => {
   ];
 
   // 위험 속성을 제외하고 남은 속성을 보여준다. (새로운 샘플 만들때 참고)
-  let excludeCaution = Object.values(ATTR)
-    .filter((attrType) => !mergeDangerTypes.includes(attrType))
-    .sort();
-  message.push(`추천 위험 속성 : ${excludeCaution.join(", ")}`);
-
-  message.push("--------------------------------------");
+  // let excludeCaution = Object.values(ATTR)
+  //   .filter((attrType) => !mergeDangerTypes.includes(attrType))
+  //   .sort();
+  // message.push(`추천 위험 속성 : ${excludeCaution.join(", ")}`);
+  // message.push("--------------------------------------");
   return message.join("\n");
 };
 
@@ -331,7 +327,7 @@ const findMonster = (monsterName, teraType) => {
   const finalEntry = [];
   compTypes.map((type) => {
     const mapJson = JSON.parse(
-      fs.readFileSync(`./data/out/monsterMap_${type}.json`, "utf8")
+      fs.readFileSync(`./data/monsterMap_${type}.json`, "utf8")
     );
 
     Object.entries(mapJson)
@@ -398,24 +394,37 @@ const findMonster = (monsterName, teraType) => {
   // 검색 정보
   message.push("--------------------------------------");
   message.push(`**${monsterName} ${teraType}**`);
+  message.push(`약점 속성: ${compTypes.join(", ")}`);
 
-  for (let i = 0; i < 10; i++) {
-    if (!finalEntry[i]) continue; // 10개보다 부족한 경우 예외처리
+  const MAX_LIST = 10;
+  for (const { name, type, safeTypes, score, totalStat } of finalEntry) {
+    const entry = [];
 
-    const { name, type, safeTypes, score, totalStat } = finalEntry[i];
+    // 이미 내가 갖고있는 몬스터인지 확인
+    let hasMonster = false;
+    for (const [key, value] of Object.entries(USER_MONSTERS)) {
+      if (name.includes(key) && value.type.includes(type)) {
+        hasMonster = true;
+        break;
+      }
+    }
+    if (hasMonster) continue;
 
     // 몬스터 정보
-    message.push("--------------------------------------");
-    message.push(`**${name}**`);
-    message.push(`필요 타입: ${type}`);
-    message.push(
+    entry.push("--------------------------------------");
+    entry.push(`**${name}**`);
+    entry.push(`필요 타입: ${type}`);
+    entry.push(
       `방어상성 총합(${score}): ${safeTypes
         .map((safeType) =>
           Object.entries(safeType).map((entry) => `${entry[0]}:${entry[1]}`)
         )
         .join(", ")}`
     );
-    message.push(`종족값 총합: ${totalStat}`);
+    entry.push(`종족값 총합: ${totalStat}`);
+    message.push(entry.join("\n"));
+
+    if (MAX_LIST + 3 <= message.length) break;
   }
   message.push("--------------------------------------");
   return message.join("\n");
@@ -424,7 +433,7 @@ const findMonster = (monsterName, teraType) => {
 (() => {
   // 👑✨💠
   // console.log(recommandMonster());
-  // console.log(findMonster("드래펄트", "얼음"));
+  // console.log(findMonster("카디나르마", "불꽃"));
   // console.log(startFind("파라블레이즈", "페어리"));
   // console.log(detail("물"));
   // return;

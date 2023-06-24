@@ -7,7 +7,7 @@ const { setTimeout } = require("node:timers/promises");
 const writeFile = (type, data) => {
   const fileName = path.resolve(
     path.dirname(__filename),
-    "data/out",
+    "data",
     `monsterMap_${type}.json`
   );
   fs.writeFileSync(fileName, JSON.stringify(data), "utf8");
@@ -131,8 +131,8 @@ const parseHtml = async (data) => {
   return result;
 };
 
-const { ALL_MONSTERS } = require("./data/allMonsters");
-const { ATTR } = require("./types");
+const { ALL_MONSTERS } = require("../constants/allMonsters");
+const { ATTR } = require("../constants/types");
 (async () => {
   // for (const attr of Object.values(ATTR)) {
   //   console.log("--------------------------------------");

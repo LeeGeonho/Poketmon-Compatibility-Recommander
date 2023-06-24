@@ -36,21 +36,21 @@
 
 ### 몬스터 관련 데이터
 
-- type.js
+- /constants/type.js
 
   포켓몬스터의 속성 및 팁, 부가정보 목록
 
-- monster.js
+- /constants/monster.js
 
   RAID_MONSTERS : 6성~ 테라레이드 포켓몬 상세 목록
 
   USER_MONSTERS : 나의 포켓몬 상세 목록
 
-- /data/allMonsters.js
+- /constants/allMonsters.js
 
   ALL_MONSTERS : 속성별로 현존하는 모든 포켓몬 이름 (메타 데이터)
 
-- /data/out/monsterMap\_${type}.json
+- /data/monsterMap\_${type}.json
 
   속성별로 현존하는 모든 포켓몬 상세 목록 (메타 데이터)
 
@@ -58,13 +58,13 @@
 
 모든 포켓몬의 정보를 가져오기 위해 크롤링함
 
-- crawling.js
+- /scripts/crawling.js
 
-  `https://pokemon.fandom.com` 사이트의 데이터 활용하여 `/data/out`폴더에 속성별로 저장함
+  `https://pokemon.fandom.com` 사이트의 데이터 활용하여 `/data`폴더에 속성별로 저장함
 
-- crawling_temp.js
+- /scripts/crawling_temp.js
 
-  `allMonsters.js`을 만들기 위한 데이터 보정
+  `/constants/allMonsters.js`을 만들기 위한 데이터 보정
 
 ### 디스코드
 
@@ -72,7 +72,7 @@
 
   디스코드 api를 사용하기 위한 Helper
 
-- slashCommander.js
+- /scripts/slashCommander.js
 
   디스코드 bot commander를 만드는 스크립트
 
@@ -82,8 +82,8 @@
 
    > https://pokemon.fandom.com/ko/wiki/%EB%B6%84%EB%A5%98:%ED%83%80%EC%9E%85%EB%B3%84_%ED%8F%AC%EC%BC%93%EB%AA%AC
 
-2. `/data/allMonsters.js`에 추가한다.
+2. `/constants/allMonsters.js`에 추가한다.
 
-3. 해당하는 속성 파일(`/data/out/monsterMap\_${type}.json`)을 지운다.
+3. 해당하는 속성 파일(`/data/monsterMap\_${type}.json`)을 지운다.
 
 4. `crawling.js`에서 해당 속성만 스크립트를 실행한다.
